@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocSafe Brasil - Sua Wallet Digital Segura</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons for premium feel -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+</head>
+<body class="locked">
+    <!-- Liquid Background Elements -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Lock Screen Overlay -->
+    <div id="lock-screen" class="glass-overlay">
+        <div class="lock-card glass">
+            <div class="lock-icon"><i data-lucide="lock"></i></div>
+            <h2>DocSafe Brasil</h2>
+            <p>Seus documentos estão protegidos com AES-256</p>
+            <div class="input-group">
+                <input type="password" id="vault-pass" placeholder="Senha do Vault" autofocus>
+                <button id="unlock-btn"><i data-lucide="key"></i></button>
+            </div>
+            <div id="error-msg" class="error hidden">Senha incorreta. Acesso negado.</div>
+        </div>
+    </div>
+
+    <div class="app-container" id="main-app" style="display:none">
+        <!-- Views Container -->
+        <div id="views-container">
+            <!-- Home View -->
+            <div id="home-view" class="view active">
+                <!-- Header / Greeting -->
+                <header class="header">
+                    <div class="profile-info">
+                        <div class="avatar">
+                            <img src="https://ui-avatars.com/api/?name=David+Luz&background=random" alt="User Profile">
+                        </div>
+                        <div class="greeting">
+                            <span>Bom dia, David!</span>
+                            <h1>DocSafe Brasil</h1>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Main Dashboard Card -->
+                <section class="main-card glass fade-in-up">
+                    <div class="card-header">
+                        <div class="title">
+                            <span>Completude do Wallet</span>
+                            <h2 id="overall-progress-text">0%</h2>
+                        </div>
+                        <div class="stats positive">
+                            <i data-lucide="check-circle"></i>
+                            <span id="doc-count-tag">0 / 5 Docs</span>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-progress">
+                        <div class="progress-info">
+                            <span>Adicione seus documentos essenciais</span>
+                            <span id="progress-percentage-info">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="fill" id="overall-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- My Wallet -->
+                <section class="section-title fade-in-up">
+                    <h3>Meus Documentos</h3>
+                    <a href="javascript:void(0)" onclick="switchView('folder-view')">Ver todos</a>
+                </section>
+
+                <section class="wallet-scroll fade-in-up">
+                    <!-- Dynamic Content via app.js -->
+                    <div class="add-card glass" id="add-doc-trigger">
+                        <i data-lucide="plus-circle"></i>
+                        <span>Adicionar</span>
+                    </div>
+                </section>
+
+                <!-- Quick Actions -->
+                <section class="quick-grid fade-in-up">
+                    <div class="action-item glass" onclick="showModal('action-scan')">
+                        <div class="icon-wrap"><i data-lucide="scan"></i></div>
+                        <span>Escanear</span>
+                    </div>
+                    <div class="action-item glass" onclick="showModal('action-docs')">
+                        <div class="icon-wrap"><i data-lucide="file-check-2"></i></div>
+                        <span>Certidões</span>
+                    </div>
+                    <div class="action-item glass" onclick="showModal('action-history')">
+                        <div class="icon-wrap"><i data-lucide="history"></i></div>
+                        <span>Histórico</span>
+                    </div>
+                    <div class="action-item glass" onclick="switchView('profile-view')">
+                        <div class="icon-wrap"><i data-lucide="settings"></i></div>
+                        <span>Ajustes</span>
+                    </div>
+                </section>
+
+                <section class="section-title fade-in-up">
+                    <h3>Atividade Recente</h3>
+                    <i data-lucide="filter" class="icon-small"></i>
+                </section>
+
+                <section class="activity-list fade-in-up">
+                    <div class="activity-placeholder glass">
+                        Carregando logs de segurança...
+                    </div>
+                </section>
+            </div>
+
+            <!-- Other Views (Simulated) -->
+            <div id="search-view" class="view hidden">
+                <div class="view-header">
+                    <h2>Buscar no Vault</h2>
+                </div>
+                <div class="search-wrap glass">
+                    <i data-lucide="search"></i>
+                    <input type="text" placeholder="Nome do arquivo ou categoria...">
+                </div>
+            </div>
+
+            <div id="folder-view" class="view hidden">
+                 <div class="view-header">
+                    <h2>Minhas Pastas</h2>
+                </div>
+                <div class="folder-grid">
+                    <div class="glass folder-item"><i data-lucide="folder"></i><span>Pessoal</span></div>
+                    <div class="glass folder-item"><i data-lucide="folder"></i><span>Trabalho</span></div>
+                </div>
+            </div>
+
+            <div id="profile-view" class="view hidden">
+                <div class="view-header">
+                    <h2>Ajustes e Segurança</h2>
+                </div>
+                <div class="settings-list glass">
+                    <div class="setting-item" onclick="installPWA()"><span>Instalar no Celular</span> <i data-lucide="download-cloud"></i></div>
+                    <div class="setting-item"><span>Mudar Senha Mestra</span> <i data-lucide="chevron-right"></i></div>
+                    <div class="setting-item"><span>Autenticação Biométrica</span> <i data-lucide="chevron-right"></i></div>
+                    <div class="setting-item" onclick="location.reload()"><span>Sair (Lock)</span> <i data-lucide="log-out"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden File Input for Real Uploads -->
+        <input type="file" id="real-file-input" style="display:none">
+
+        <!-- Global Modal System -->
+        <div id="global-modal" class="modal-overlay hidden">
+            <div class="modal-content glass">
+                <div class="modal-header">
+                    <h3 id="modal-title">Detalhe</h3>
+                    <button class="close-btn" onclick="hideModal()"><i data-lucide="x"></i></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- Dynamic Body -->
+                </div>
+                <div class="modal-footer" id="modal-footer">
+                    <!-- Dynamic Footer -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Tab Bar -->
+        <nav class="bottom-nav glass">
+            <a href="javascript:void(0)" class="active nav-link" onclick="switchView('home-view')"><i data-lucide="home"></i></a>
+            <a href="javascript:void(0)" class="nav-link" onclick="switchView('search-view')"><i data-lucide="search"></i></a>
+            <a href="javascript:void(0)" class="scan-btn" onclick="showModal('action-scan')"><i data-lucide="maximize"></i></a>
+            <a href="javascript:void(0)" class="nav-link" onclick="switchView('folder-view')"><i data-lucide="folder-open"></i></a>
+            <a href="javascript:void(0)" class="nav-link" onclick="switchView('profile-view')"><i data-lucide="user"></i></a>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
